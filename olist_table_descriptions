@@ -1,0 +1,12 @@
+-- Join customers with more than one order from who have ordered in 2018 to the other tables to get all of their orders and information
+
+TABLE DESCRIPTIONS
+- CUSTOMER: default customer table
+- ORDER_DATASET: default orders table
+- ORDER_ITEM: default order items table
+- ORDER_PAYMENT: default order payment table
+- CURRENT_CUSTOMER: counts of active customers with more than one order
+- FULL_CURRENT_CUSTOMER: current_customer joined with default customer table
+- ACTIVE_CUSTOMER_ORDER: full_current_customer joined with orders table
+- MULTIACTIVE_COOP: active_customer_order joined with order payments
+- ACTIVE_MULTI: multiactve_coop joined with order_payment
