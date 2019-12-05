@@ -1,9 +1,8 @@
--- make a model with linear regression that tries to predict the estimated cumulative 6 month revenue from a new customer
+-- The goal of Capstone #3 is to 
+-- A): investigate the data using graphs, tableau, excel, python, sql, whatever you want, and 
+-- B): to try to build a regression model to predict how much a new customer will spend in their first six months. 
 
--- r-squared tells given a set of independent variables, how good does that fit the data on those factors and the dependent variable
-
--- the individual coefficients get multiplied by the individual variables to get closer to the dependent variable. you have to check the p value to see if any of the coefficients are significant values
-
+-- Based on A), you are also free to go in other directions or build different models in addition to B) above, with the caveat that your preliminary presentation and slides are due on FRIDAY.  Make it work. 
 
 
 
@@ -288,5 +287,23 @@ total_orders>1)
 
 --^ 1086 or so customers that have bought in the last year of the dataset and their amount of orders
 
+CREATE TABLE current_customer as(
+WITH deliveries as(
+select
+od.order_id
+,od.customer_id
+,EXTRACT(year from od.order_purchase_timestamp) as latest_year
 
+from
+order_dataset as od)
 
+-- IT DOESN'T MATTER IF THEY ORDERED MULTIPLE ITEMS IN THE SAME ORDER. CUT ORDERS
+
+SELECT product_id, 
+count (distinct seller_id) 
+
+FROM order_item 
+group by product_id 
+order by 2 DESC
+
+-- ^ Shows the amount of sellers that sell the same product id
