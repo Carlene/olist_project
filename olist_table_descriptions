@@ -10,10 +10,8 @@ TABLE DESCRIPTIONS
 - ACTIVE_CUSTOMER_ORDER: full_current_customer joined with orders table
 - MULTIACTIVE_COOP: active_customer_order joined with order payments
 - ACTIVE_MULTI: multiactve_coop joined with order_payment
+- PROJECTION: has six months from every customer's purchase date
+- FIRST_PURCHASE: shows every customer's first purchase
 
-
-The goal of Capstone #3 is to 
-A): investigate the data using graphs, tableau, excel, python, sql, whatever you want, and 
-B): to try to build a regression model to predict how much a new customer will spend in their first six months. 
-
-Based on A), you are also free to go in other directions or build different models in addition to B) above, with the caveat that your preliminary presentation and slides are due on FRIDAY.  Make it work. 
+CSV DESCRIPTIONS
+- PROJECTION_INFO: six months from every customer's purchase date, but not grouped by order/payment value

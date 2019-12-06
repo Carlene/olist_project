@@ -307,3 +307,105 @@ group by product_id
 order by 2 DESC
 
 -- ^ Shows the amount of sellers that sell the same product id
+
+ALTER TABLE order_item
+ALTER COLUMN order_item_id TYPE int USING order_item_id::integer;
+
+--^ change data type from a varchar to integer
+
+WITH ten_customer as(
+select * from customer
+where customer_unique_id = '8d50f5eadf50201ccdcedfb9e2ac8455'
+OR customer_unique_id = '3e43e6105506432c953e165fb2acf44c'
+OR customer_unique_id = 'ca77025e7201e3b30c44b472ff346268'
+OR customer_unique_id = '6469f99c1f9dfae7733b25662e7f1782'
+OR customer_unique_id = '1b6c7548a2a1f9037c1fd3ddfed95f33'
+OR customer_unique_id = 'dc813062e0fc23409cd255f7f53c7074'
+OR customer_unique_id = 'de34b16117594161a6a89c50b289d35a'
+OR customer_unique_id = 'f0e310a6839dce9de1638e0fe5ab282a'
+OR customer_unique_id = '63cfc61cee11cbe306bff5857d00bfe4'
+OR customer_unique_id = '47c1a3033b8b77b3ab6e109eb4d5fdf3')
+
+,cust_order AS(
+select 
+customer_unique_id
+,customer_city
+,customer_state
+,order_id
+,od.customer_id
+,order_status
+,order_purchase_timestamp
+
+from order_dataset as od
+JOIN ten_customer as tc
+ON od.customer_id = tc.customer_id)
+
+,quantities as(
+select 
+customer_unique_id
+,customer_city
+,customer_state
+,co.order_id
+,order_status
+,order_purchase_timestamp
+,product_id
+,price
+,order_item_id
+
+from order_item as oi
+JOIN cust_order as co
+ON oi.order_id = co.order_id
+
+order by order_id)
+
+,amount_item as(
+select 
+customer_unique_id
+,customer_city
+,customer_state
+,q.order_id
+,order_status
+,order_purchase_timestamp
+,product_id
+,price
+,payment_value
+,MAX(order_item_id) as item_count
+
+from quantities as q
+JOIN order_payment as op
+ON q.order_id = op.order_id
+
+group by 1,2,3,4,5,6,7,8,9)
+
+,purchase_date as(
+select 
+customer_unique_id
+,customer_city
+,customer_state
+,order_id
+,payment_value
+,order_purchase_timestamp
+
+from amount_item)
+
+,six_month as (
+SELECT 
+*
+,order_purchase_timestamp + INTERVAL '6 months' as six_months
+
+from
+purchase_date)
+
+SELECT 
+customer_unique_id
+,customer_city
+,customer_state
+,order_id
+,payment_value
+,EXTRACT(year from order_purchase_timestamp) as original_order_year
+,EXTRACT(month from order_purchase_timestamp) as original_order_month
+,EXTRACT(year from six_months) as projected_year
+,EXTRACT(month from six_months) as projected_month
+
+from 
+six_month
