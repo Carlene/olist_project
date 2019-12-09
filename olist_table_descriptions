@@ -12,6 +12,8 @@ TABLE DESCRIPTIONS
 - ACTIVE_MULTI: multiactve_coop joined with order_payment
 - PROJECTION: has six months from every customer's purchase date
 - FIRST_PURCHASE: shows every customer's first purchase
+- SIX_MONTH_PURCHASES: shows every purchase within six months of buying, not grouped by order
 
 CSV DESCRIPTIONS
 - PROJECTION_INFO: six months from every customer's purchase date, but not grouped by order/payment value
+

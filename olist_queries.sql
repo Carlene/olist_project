@@ -409,3 +409,159 @@ customer_unique_id
 
 from 
 six_month
+
+----^ an attempt to add columns with order_item_id and other (i thought) pertinent data while trying to add six months to the first purchase timestamp
+
+WITH ten_customer as(
+select * from customer
+where customer_unique_id = '8d50f5eadf50201ccdcedfb9e2ac8455'
+OR customer_unique_id = '3e43e6105506432c953e165fb2acf44c'
+OR customer_unique_id = 'ca77025e7201e3b30c44b472ff346268'
+OR customer_unique_id = '6469f99c1f9dfae7733b25662e7f1782'
+OR customer_unique_id = '1b6c7548a2a1f9037c1fd3ddfed95f33'
+OR customer_unique_id = 'dc813062e0fc23409cd255f7f53c7074'
+OR customer_unique_id = 'de34b16117594161a6a89c50b289d35a'
+OR customer_unique_id = 'f0e310a6839dce9de1638e0fe5ab282a'
+OR customer_unique_id = '63cfc61cee11cbe306bff5857d00bfe4'
+OR customer_unique_id = '47c1a3033b8b77b3ab6e109eb4d5fdf3'
+)
+
+,cust_order AS(
+select 
+customer_unique_id
+,customer_city
+,customer_state
+,order_id
+,od.customer_id
+,order_status
+,order_purchase_timestamp
+
+from order_dataset as od
+JOIN ten_customer as tc
+ON od.customer_id = tc.customer_id)
+
+
+,total_purchase as(
+select 
+customer_unique_id
+,customer_city
+,customer_state
+,co.order_id
+,order_status
+,order_purchase_timestamp
+,sum(payment_value) as total_order_price
+
+from cust_order as co
+JOIN order_payment as op
+ON co.order_id = op.order_id
+
+group by 1,2,3,4,5,6)
+
+,first_purchase as(
+select 
+min(order_purchase_timestamp) as first_order
+,customer_unique_id
+
+from total_purchase
+
+group by customer_unique_id)
+
+,six_month_range as(
+select customer_unique_id, first_order, first_order + INTERVAL '6 months' as six_months_later
+from first_purchase)
+
+select smr.customer_unique_id, 
+first_order, 
+six_months_later, 
+order_purchase_timestamp
+,order_id
+,total_order_price
+
+from 
+six_month_range as smr
+JOIN total_purchase as tp
+ON smr.customer_unique_id = tp.customer_unique_id
+
+where
+order_purchase_timestamp between first_order and six_months_later
+
+--^ the ten customers are ten people with the most orders. adding six months to everyone's first purchase date, and showing the orders that were made between that six month period, with the payment value made
+
+CREATE TABLE six_month_purchases as (
+WITH ten_customer as(
+select * from customer
+-- where customer_unique_id = '8d50f5eadf50201ccdcedfb9e2ac8455'
+-- OR customer_unique_id = '3e43e6105506432c953e165fb2acf44c'
+-- OR customer_unique_id = 'ca77025e7201e3b30c44b472ff346268'
+-- OR customer_unique_id = '6469f99c1f9dfae7733b25662e7f1782'
+-- OR customer_unique_id = '1b6c7548a2a1f9037c1fd3ddfed95f33'
+-- OR customer_unique_id = 'dc813062e0fc23409cd255f7f53c7074'
+-- OR customer_unique_id = 'de34b16117594161a6a89c50b289d35a'
+-- OR customer_unique_id = 'f0e310a6839dce9de1638e0fe5ab282a'
+-- OR customer_unique_id = '63cfc61cee11cbe306bff5857d00bfe4'
+-- OR customer_unique_id = '47c1a3033b8b77b3ab6e109eb4d5fdf3'
+)
+
+,cust_order AS(
+select 
+customer_unique_id
+,customer_city
+,customer_state
+,order_id
+,od.customer_id
+,order_status
+,order_purchase_timestamp
+
+from order_dataset as od
+JOIN ten_customer as tc
+ON od.customer_id = tc.customer_id)
+
+
+,total_purchase as(
+select 
+customer_unique_id
+,customer_city
+,customer_state
+,co.order_id
+,order_status
+,order_purchase_timestamp
+,sum(payment_value) as total_order_price
+
+from cust_order as co
+JOIN order_payment as op
+ON co.order_id = op.order_id
+
+group by 1,2,3,4,5,6)
+
+,first_purchase as(
+select 
+min(order_purchase_timestamp) as first_order
+,customer_unique_id
+
+from total_purchase
+
+group by customer_unique_id)
+
+,six_month_range as(
+select customer_unique_id, first_order, first_order + INTERVAL '6 months' as six_months_later
+from first_purchase)
+
+select smr.customer_unique_id
+,customer_city
+,customer_state
+,first_order 
+,six_months_later
+,order_purchase_timestamp
+,order_id
+,total_order_price
+
+from 
+six_month_range as smr
+JOIN total_purchase as tp
+ON smr.customer_unique_id = tp.customer_unique_id
+
+where
+order_purchase_timestamp between first_order and six_months_later)
+copy six_month_purchases
+to '/Users/galvanize/Documents/regression/olist/six_month_purchase.csv' DELIMITER ',' CSV HEADER
+--^ just what i had in pgadmin before i closed it
