@@ -1,3 +1,5 @@
+--- Making a SQL database from the csv files
+
 CREATE TABLE customer(
 	customer_id varchar(255) NOT NULL
 	,customer_unique_id varchar(255) NOT NULL
