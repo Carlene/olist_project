@@ -1,11 +1,3 @@
--- The goal of Capstone #3 is to 
--- A): investigate the data using graphs, tableau, excel, python, sql, whatever you want, and 
--- B): to try to build a regression model to predict how much a new customer will spend in their first six months. 
-
--- Based on A), you are also free to go in other directions or build different models in addition to B) above, with the caveat that your preliminary presentation and slides are due on FRIDAY.  Make it work. 
-
-
-
 CREATE TABLE customer(
 	customer_id varchar(255) NOT NULL
 	,customer_unique_id varchar(255) NOT NULL
